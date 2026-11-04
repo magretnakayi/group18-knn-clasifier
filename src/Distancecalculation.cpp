@@ -16,8 +16,7 @@ int main() {
     cout << "Loaded " << dataset.size() << " records successfully.\n";
 
     // Calculate distance between the first and second data points
-    double dist = DistanceCalculator::euclideanDistance(dataset[0], dataset[1]);
-    
+    double dist = DistanceCalculator::calculateEuclideanDistance(dataset[0], dataset[1]);
     cout << "Euclidean distance between Record 0 and Record 1: " << dist << "\n";
     cout << "Distance calculation verification completed successfully!\n";
     
