@@ -2,11 +2,12 @@
 #include "distance.hpp"
 #include <algorithm>
 using namespace std;
-using distance::calculateEuclideanDistance;
-vector<Neighbor> findNearestNeighbors(const vector<DataPoint>& trainData, const vector<double>& query) {
+
+vector<Neighbor> findNearestNeighbors(const vector<DataPoint>& trainData, const DataPoint& query) {
     vector<Neighbor> neighbors;
     for (const auto& sample : trainData) {
-        double dist = calculateEuclideanDistance(sample.features, query);
+        // Pass either full DataPoint objects or sample.features / query.features depending on your header definition
+        double dist = DistanceCalculator::calculateEuclideanDistance(sample, query);
         neighbors.push_back({dist, sample.label});
     }
     sort(neighbors.begin(), neighbors.end(), [](const Neighbor& a, const Neighbor& b) {
