@@ -1,0 +1,161 @@
+#include "ConfusionMatrix.hpp"
+#include <iostream>
+#include <stdexcept>
+using namespace std;
+
+namespace {
+// Largest label + 1, used by the constructors that do not take a class count
+int inferClassCount(const int* labels, int size) {
+    int maxLabel = 0;
+    for (int i = 0; i < size; ++i) {
+        if (labels[i] > maxLabel) {
+            maxLabel = labels[i];
+        }
+    }
+    return maxLabel + 1;
+}
+}
+
+// Validates, copies labels and builds the matrix (nothing is allocated until all checks pass)
+void ConfusionMatrix::init(const int* actual, const int* predicted, int size, int classes) {
+    if (size <= 0 || classes <= 0 || actual == nullptr || predicted == nullptr) {
+        throw invalid_argument("Invalid data size, class count or null pointers supplied to ConfusionMatrix.");
+    }
+    for (int i = 0; i < size; ++i) {
+        if (actual[i] < 0 || actual[i] >= classes || predicted[i] < 0 || predicted[i] >= classes) {
+            throw out_of_range("Label outside valid range 0 <= label < num_classes.");
+        }
+    }
+
+    data_size = size;
+    num_classes = classes;
+
+    actual_labels = new int[data_size];
+    predicted_labels = new int[data_size];
+    for (int i = 0; i < data_size; ++i) {
+        actual_labels[i] = actual[i];
+        predicted_labels[i] = predicted[i];
+    }
+
+    matrix = new int*[num_classes];
+    for (int r = 0; r < num_classes; ++r) {
+        matrix[r] = new int[num_classes]();   // () sets every cell to 0
+    }
+    for (int i = 0; i < data_size; ++i) {
+        matrix[actual_labels[i]][predicted_labels[i]]++;
+    }
+}
+
+void ConfusionMatrix::release() {
+    if (matrix != nullptr) {
+        for (int r = 0; r < num_classes; ++r) {
+            delete[] matrix[r];
+        }
+        delete[] matrix;
+        matrix = nullptr;
+    }
+    delete[] actual_labels;
+    delete[] predicted_labels;
+    actual_labels = nullptr;
+    predicted_labels = nullptr;
+}
+
+// Multi-class constructor using raw pointers and arrays
+ConfusionMatrix::ConfusionMatrix(const int* actual, const int* predicted, int size, int classes)
+    : actual_labels(nullptr), predicted_labels(nullptr), data_size(0), num_classes(0), matrix(nullptr) {
+    init(actual, predicted, size, classes);
+}
+
+// Raw pointers, class count worked out from the data
+ConfusionMatrix::ConfusionMatrix(const int* actual, const int* predicted, int size)
+    : actual_labels(nullptr), predicted_labels(nullptr), data_size(0), num_classes(0), matrix(nullptr) {
+    if (size <= 0 || actual == nullptr || predicted == nullptr) {
+        throw invalid_argument("Invalid data size or null pointers supplied to ConfusionMatrix.");
+    }
+    int classes = inferClassCount(actual, size);
+    int classesPred = inferClassCount(predicted, size);
+    init(actual, predicted, size, classes > classesPred ? classes : classesPred);
+}
+
+// Overloaded constructor for STL vectors
+ConfusionMatrix::ConfusionMatrix(const vector<int>& actual, const vector<int>& predicted)
+    : actual_labels(nullptr), predicted_labels(nullptr), data_size(0), num_classes(0), matrix(nullptr) {
+    if (actual.size() != predicted.size() || actual.empty()) {
+        throw invalid_argument("Actual and predicted vectors must be equal in size and non-empty.");
+    }
+    int size = static_cast<int>(actual.size());
+    int classes = inferClassCount(actual.data(), size);
+    int classesPred = inferClassCount(predicted.data(), size);
+    init(actual.data(), predicted.data(), size, classes > classesPred ? classes : classesPred);
+}
+
+// Copy Constructor (Deep Copy)
+ConfusionMatrix::ConfusionMatrix(const ConfusionMatrix& other)
+    : actual_labels(nullptr), predicted_labels(nullptr), data_size(0), num_classes(0), matrix(nullptr) {
+    init(other.actual_labels, other.predicted_labels, other.data_size, other.num_classes);
+}
+
+// Assignment Operator (Deep Copy)
+ConfusionMatrix& ConfusionMatrix::operator=(const ConfusionMatrix& other) {
+    if (this != &other) {
+        release();
+        init(other.actual_labels, other.predicted_labels, other.data_size, other.num_classes);
+    }
+    return *this;
+}
+
+// Destructor cleaning up pointer memory
+ConfusionMatrix::~ConfusionMatrix() {
+    release();
+}
+
+// Prints the grid: rows are actual classes, columns are predicted classes
+void ConfusionMatrix::printMatrix() const {
+    cout << "Actual\\Predicted";
+    for (int c = 0; c < num_classes; ++c) {
+        cout << "\t" << c;
+    }
+    cout << endl;
+    for (int r = 0; r < num_classes; ++r) {
+        cout << r << "\t\t";
+        for (int c = 0; c < num_classes; ++c) {
+            cout << "\t" << matrix[r][c];
+        }
+        cout << endl;
+    }
+}
+
+// Sum of the diagonal (correct predictions) divided by the total number of samples
+double ConfusionMatrix::getAccuracy() const {
+    int correct = 0;
+    for (int i = 0; i < num_classes; ++i) {
+        correct += matrix[i][i];
+    }
+    return static_cast<double>(correct) / data_size;
+}
+
+// Computes matrix counts and prints out performance results using pointer traversal
+void ConfusionMatrix::computeAndDisplay(int positive_class) const {
+    int tp = 0; // True Positive
+    int tn = 0; // True Negative
+    int fp = 0; // False Positive
+    int fn = 0; // False Negative
+
+    for (int i = 0; i < data_size; ++i) {
+        if (actual_labels[i] == positive_class && predicted_labels[i] == positive_class) {
+            tp++;
+        } else if (actual_labels[i] != positive_class && predicted_labels[i] != positive_class) {
+            tn++;
+        } else if (actual_labels[i] != positive_class && predicted_labels[i] == positive_class) {
+            fp++;
+        } else if (actual_labels[i] == positive_class && predicted_labels[i] != positive_class) {
+            fn++;
+        }
+    }
+
+    cout << "=== Confusion Matrix Report (Target Class: " << positive_class << ") ===" << endl;
+    cout << "True Positives (TP):  " << tp << endl;
+    cout << "True Negatives (TN):  " << tn << endl;
+    cout << "False Positives (FP): " << fp << endl;
+    cout << "False Negatives (FN): " << fn << endl;
+}
