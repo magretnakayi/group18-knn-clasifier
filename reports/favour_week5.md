@@ -1,0 +1,20 @@
+# Confusion Matrix Testing and Example
+
+## 1. Overview
+
+The confusion matrix module constructs a multi-class confusion matrix to visualize actual versus predicted classifications.
+
+## 2. File Implementation
+
+- `confusionmatrix_main.cpp`: Driver script running multi-class label comparisons and displaying the output matrix grid.
+- `example_confusion_matrix.cpp`: Standalone example printing a classification confusion matrix.
+- `test_confusion_matrix.cpp`: Unit test validating that diagonal matrix counts match expected correct prediction totals.
+
+## 3. Error Handling
+
+- **Boundary Validation:** Ensures labels fall strictly within valid class bounds (`0 <= label < num_ classes`) to prevent out-of-bounds pointer indexing.
+- **Exception Triggers:** Throws `std::out_ of_ range  if an unexpected label index is encountered.
+
+## 4. Conclusion
+
+The Confusion Matrix module delivers essential multi-class diagnostic capabilities. By mapping actual versus predicted classifications onto a structured heap grid, it enables intuitive error analysis and visual performance tracking.
