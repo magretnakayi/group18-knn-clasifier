@@ -16,14 +16,12 @@ int main() {
     cout << "Loaded " << dataset.size() << " records successfully.\n";
     cout << "Before Preprocessing (First Record Feature 0): " << dataset[0].features[0] << "\n";
 
-    // Apply Min-Max Normalization
-    DataPreprocessor::minMaxNormalize(dataset);
-    cout << "After Min-Max Normalization (First Record Feature 0): " << dataset[0].features[0] << "\n";
+  // Apply normalization using the function from preprocessing.hpp
+    normalizeDataset(dataset);
+    cout << "After Normalization (First Record Feature 0): " << dataset[0].features[0] << "\n";
 
-    // Apply Standard Scaling
-    DataPreprocessor::standardScale(dataset);
-    cout << "After Standard Scaling (First Record Feature 0): " << dataset[0].features[0] << "\n";
-
+    cout << "Preprocessing verification completed successfully!\n";
+    return 0;
     cout << "Preprocessing verification completed successfully!\n";
     return 0;
 }

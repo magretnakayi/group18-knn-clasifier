@@ -1,5 +1,5 @@
 #include "HyperparameterSelector.hpp"
-#include "ClassPrediction.hpp"
+#include "ClassPredictor.hpp"
 #include "distance.hpp"
 #include <stdexcept>
 #include <algorithm>
@@ -84,7 +84,7 @@ int HyperparameterSelector::optimizeK(const vector<DataPoint>& train_data, const
 
             // Calculate distance from validation point to all training points from dataset.csv
             for (const auto& train_point : train_data) {
-                double dist = calculateEuclideanDistance(val_point.features, train_point.features);
+                double dist = DistanceCalculator::calculateEuclideanDistance(val_point, train_point);
                 distances_and_labels.push_back({dist, train_point.label});
             }
 

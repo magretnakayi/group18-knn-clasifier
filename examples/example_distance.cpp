@@ -12,7 +12,7 @@ int main() {
     }
 
     cout << "--- Distance API Usage Example ---\n";
-    double d = DistanceCalculator::euclideanDistance(data[0], data[1]);
+   double d = DistanceCalculator::calculateEuclideanDistance(data[0], data[1]);
     cout << "Calculated Euclidean Distance: " << d << "\n";
 
     return 0;
