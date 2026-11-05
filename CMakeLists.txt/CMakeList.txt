@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(KNN_Classifier LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+add_executable(KNN_Classifier
+    src/project_main.cpp
+    src/dataset.cpp
+    src/datapreprocessing.cpp
+    src/distance.cpp
+    src/knnsearch.cpp
+    src/knnselection.cpp
+    src/Hyperparameterselector.cpp
+    src/modelevaluation.cpp
+    src/ConfusionMatrix.cpp
+    src/PrecisionRecallF1.cpp
+    src/classpredictor.cpp
+    src/majorityvoting.cpp
+    src/tiehandling.cpp
+    src/Featurescaling.cpp
+)
+
+configure_file(
+    ${PROJECT_SOURCE_DIR}/dataset.csv
+    ${PROJECT_BINARY_DIR}/dataset.csv
+    COPYONLY
+)

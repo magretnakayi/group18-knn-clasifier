@@ -9,7 +9,7 @@ int main() {
     
     vector<DataPoint> dataset = loadCSV("dataset.csv");
     if (dataset.empty()) {
-        cerr << "Error: Could not load dataset.csv\n";
+        cout << "Error: Could not load dataset.csv\n";
         return 1;
     }
 

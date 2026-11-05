@@ -11,6 +11,7 @@ struct Neighbor {
     int label;
 };
 
-vector<Neighbor> findNearestNeighbors(const vector<DataPoint>& trainData, const vector<double>& query);
+vector<Neighbor> findNearestNeighbors(const vector<DataPoint>& dataset, const vector<double>& queryPoint
+);
 
 #endif
