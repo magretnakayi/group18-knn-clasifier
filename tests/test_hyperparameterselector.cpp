@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cassert>
-#include "hyperparameter_selector.hpp"
+#include "hyperparameterselector.hpp"
 
 using namespace std;
 
@@ -19,9 +19,13 @@ int main() {
     int* val_lbl = new int[2]{1, 2};
     int* candidates = new int[2]{1, 3};
 
-    HyperparameterSelector selector(train_feat, train_lbl, train_s, val_feat, val_lbl, val_s, num_f);
-    int best_k = selector.findOptimalK(candidates, 2);
-    
+    HyperparameterSelector selector(candidates, 2);
+
+    vector<DataPoint> t_data, v_data;
+    for (int i = 0; i < train_s; ++i) { vector<double> f; for (int j = 0; j < num_f; ++j) f.push_back(train_feat[i][j]); t_data.push_back(DataPoint{f, train_lbl[i]}); }
+    for (int i = 0; i < val_s; ++i) { vector<double> f; for (int j = 0; j < num_f; ++j) f.push_back(val_feat[i][j]); v_data.push_back(DataPoint{f, val_lbl[i]}); }
+
+    int best_k = selector.optimizeK(t_data, v_data);
     assert(best_k == 1 || best_k == 3);
     cout << "[PASS] Test Completed Successfully!" << endl;
 
