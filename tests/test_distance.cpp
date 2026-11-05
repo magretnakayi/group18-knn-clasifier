@@ -10,7 +10,7 @@ void testEuclideanDistance() {
     DataPoint p1 = { {0.0, 0.0}, 0 };
     DataPoint p2 = { {3.0, 4.0}, 1 };
 
-    double dist = DistanceCalculator::euclideanDistance(p1, p2);
+    double dist = DistanceCalculator::calculateEuclideanDistance(p1, p2);
     
     // Expected distance between (0,0) and (3,4) is 5.0
     assert(abs(dist - 5.0) < 1e-5);
